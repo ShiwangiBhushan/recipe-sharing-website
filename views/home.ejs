@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>The Broke Hypochondriac Space</title>
+  <link rel="stylesheet" href="/public.css" />
+  <style></style>
+</head>
+<body>
+    <header class="top-nav">
+  <nav>
+    <ul>
+      <li><a href="#">Recipes</a></li>
+      <li><a href="/add">Share</a></li>
+      
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="title-box">The Broke Hypochondriac Space</h1>
+
+      <p>
+        Hello fellow salubrious student. For the student teetering between an empty wallet and health anxiety — this is where culinary ingenuity meets a meager budget. We're a community sharing jugaadu recipes for robust health on a shoestring.
+      </p>
+    </div>
+
+    <div class="recipe-row">
+  <% recipes.slice(0, 4).forEach(recipe => { %>
+    <div class="recipe-card">
+      <div class="gradient-bg"></div>
+      <h3><%= recipe.name %></h3>
+      <p><%= recipe.description ? recipe.description.slice(0, 60) : "No description available." %>...</p>
+    </div>
+  <% }) %>
+</div>
+
+  </section>
+  
+
+
+
+</body>
+</html>
