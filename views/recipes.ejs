@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Explore Recipes</title>
+  <link rel="stylesheet" href="/public.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('/images/bgrecipes.jpg'); /* ← Replace with your image file */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      color: #fff;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: red;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .search-container input {
+      padding: 10px;
+      width: 50%;
+      font-size: 1rem;
+      border: 2px solid red;
+      border-radius: 8px;
+    }
+
+    .category-title {
+      background: white;
+      color: red;
+      padding: 12px 20px;
+      font-size: 1.7rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .category-section {
+      margin: 50px 0;
+    }
+
+    .recipe-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding: 10px 20px;
+      scroll-behavior: smooth;
+    }
+
+    .recipe-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .recipe-card {
+      min-width: 220px;
+      height: 250px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .recipe-card img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .recipe-card h3 {
+      margin-top: 10px;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .recipe-card:hover {
+      transform: scale(1.05);
+      transition: 0.3s;
+    }
+
+    a.recipe-card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Recipes</header>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search for recipes...">
+  </div>
+
+  <% 
+    const categories = ['North Indian', 'South Indian', 'Continental', 'Chinese', 'Italian'];
+    const imageOptions = ['burger.jpg', 'pizza.jpg', 'pasta.jpg', 'sandwich.jpg'];
+
+    function getRandom10(arr) {
+      const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 10);
+    }
+  %>
+
+  <% categories.forEach(category => { %>
+    <div class="category-section">
+      <div class="category-title"><%= category %></div>
+      <div class="recipe-scroll">
+        <% getRandom10(recipes).forEach(recipe => { 
+            const image = imageOptions[Math.floor(Math.random() * imageOptions.length)];
+        %>
+          <a href="/recipe/<%= recipe.id %>" class="recipe-card-link">
+            <div class="recipe-card">
+              <img src="/images/<%= image %>" alt="<%= recipe.name %>">
+              <h3><%= recipe.name %></h3>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+  <% }) %>
+
+</body>
+</html>

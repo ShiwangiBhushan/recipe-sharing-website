@@ -1,11 +1,16 @@
 const express = require('express');
 const fs = require('fs');
+const path = require('path');
+
 const app = express();
 const PORT = 3000;
 
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true })); // to read form body
-app.set("view engine", "ejs");
+// ✅ Required to parse JSON request bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.set('view engine', 'ejs');
+
 
 // Read recipe data
 const getRecipes = () => {
@@ -20,9 +25,15 @@ const saveRecipes = (recipes) => {
 
 // Routes
 
-app.get("/", (req, res) => {
-  const recipes = getRecipes();
-  res.render("home", { recipes });
+app.get('/', (req, res) => {
+  // Load recipes
+  const recipes = JSON.parse(fs.readFileSync('./data/recipes.json', 'utf-8'));
+
+  // Slice the first 4 recipes
+  const featuredRecipes = recipes.slice(0, 4);
+
+  // Send them to the home.ejs
+  res.render('home', { featuredRecipes });
 });
 
 app.get("/recipes", (req, res) => {
@@ -46,14 +57,36 @@ app.get("/add", (req, res) => {
 });
 
 // 📝 Handle form submission
+// Map keywords to image filenames
+const keywordToImage = {
+  burger: 'burger.jpg',
+  sandwich: 'sandwich.jpg',
+  pizza: 'pizza.jpg',
+  pasta: 'pasta.jpg'
+};
+
+function getImageFromDescription(description) {
+  const descLower = description.toLowerCase();
+  for (const keyword in keywordToImage) {
+    if (descLower.includes(keyword)) {
+      return `/images/${keywordToImage[keyword]}`;
+    }
+  }
+  return '/images/default.jpg'; // fallback image (make sure it's in /public/images)
+}
+
+// 📝 Handle form submission
 app.post("/recipes", (req, res) => {
   const recipes = getRecipes();
+
+  const autoImage = getImageFromDescription(req.body.description);
+
   const newRecipe = {
     id: recipes.length ? recipes[recipes.length - 1].id + 1 : 1,
     name: req.body.name,
     description: req.body.description,
     category: req.body.category,
-    image: req.body.image || null
+    image: autoImage
   };
 
   recipes.push(newRecipe);
@@ -61,7 +94,14 @@ app.post("/recipes", (req, res) => {
   res.redirect("/recipes");
 });
 
+
+
+
+
+
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
 

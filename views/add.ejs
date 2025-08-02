@@ -5,17 +5,93 @@
   <link rel="stylesheet" href="/public.css" />
 </head>
 <body>
+  <div id="toast" class="toast">Recipe submitted successfully!</div>
+
 
   <div class="form-container">
-    <h1>Share Your Jugaadu Recipe</h1>
-    <form action="/recipes" method="POST">
-      <input type="text" name="name" placeholder="Recipe Name" required />
-      <textarea name="description" placeholder="Recipe Description" required></textarea>
-      <input type="text" name="category" placeholder="Category (e.g. North Indian)" required />
-      <input type="text" name="image" placeholder="Image filename (e.g. salad.jpg)" />
-      <button type="submit">Submit Recipe</button>
-    </form>
+    <form id="recipeForm" method="POST">
+  <input type="text" name="name" placeholder="Recipe Name" required />
+  <textarea name="description" placeholder="Recipe Description" required></textarea>
+  <input type="text" name="category" placeholder="Category (e.g. Indian)" required />
+
+  <!-- Image preview stays -->
+  <div id="imagePreviewContainer">
+    <p>Image Preview:</p>
+    <img id="imagePreview" src="" alt="Auto Image Preview" style="max-width: 300px; display: none;" />
   </div>
+
+  <button type="submit">Submit Recipe</button>
+</form>
+
+<div id="toast" class="toast">Recipe submitted successfully!</div>
+
+
+  </div>
+
+  <script>
+  const form = document.getElementById('recipeForm');
+  const descriptionField = form.querySelector('textarea[name="description"]');
+  const imagePreview = document.getElementById('imagePreview');
+  const toast = document.getElementById('toast');
+
+  const keywordToImage = {
+    burger: 'burger.jpg',
+    sandwich: 'sandwich.jpg',
+    pasta: 'pasta.jpg',
+    pizza: 'pizza.jpg'
+  };
+
+  let selectedImage = null;
+
+  descriptionField.addEventListener('input', () => {
+    const desc = descriptionField.value.toLowerCase();
+    selectedImage = null;
+
+    for (const keyword in keywordToImage) {
+      if (desc.includes(keyword)) {
+        selectedImage = keywordToImage[keyword];
+        imagePreview.src = `/images/${selectedImage}`;
+        imagePreview.style.display = 'block';
+        return;
+      }
+    }
+
+    imagePreview.style.display = 'none';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = form.querySelector('input[name="name"]').value;
+    const description = form.querySelector('textarea[name="description"]').value;
+    const category = form.querySelector('input[name="category"]').value;
+
+    const response = await fetch('/recipes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        description,
+        category,
+        image: selectedImage // pass auto-selected image
+      })
+    });
+
+    if (response.ok) {
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+      form.reset();
+      imagePreview.style.display = 'none';
+    } else {
+      alert('Something went wrong. Please try again.');
+    }
+  });
+</script>
+
+
+
 
 </body>
 </html>
